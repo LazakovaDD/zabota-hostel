@@ -148,36 +148,36 @@ export default {
     console.log('Бэкенд выключен. Подключаем демонстрационные данные MongoDB...');
     
     // Точные копии ваших вольеров из базы данных MongoDB для работы в интернете
-    this.rooms = [
-      {
-        _id: "6a28332b2f4bdc11fff12d65f",
-        roomNumber: 1,
-        category: "Стандарт",
-        pricePerDay: 1000,
-        status: "free"
-      },
-      {
-        _id: "6a28332b2f4bdc11fd12d60",
-        roomNumber: 2,
-        category: "Стандарт",
-        pricePerDay: 1000,
-        status: "occupied"
-      },
-      {
-        _id: "6a28332b2f4bdc11fd12d61",
-        roomNumber: 3,
-        category: "Люкс",
-        pricePerDay: 2500,
-        status: "cleaning"
-      },
-      {
-        _id: "6a28332b2f4bdc11fd12d62",
-        roomNumber: 4,
-        category: "Люкс",
-        pricePerDay: 2500,
-        status: "free"
-      }
-    ];
+this.rooms = [
+  {
+    _id: "6a28332b2f4bdc11fff12d65f",
+    roomNumber: 1,
+    category: "Стандарт",
+    pricePerDay: 1000,
+    status: "free" // Оставляем свободным
+  },
+  {
+    _id: "6a28332b2f4bdc11fd12d60",
+    roomNumber: 2,
+    category: "Стандарт",
+    pricePerDay: 1000,
+    status: "free" // ИЗМЕНЕНО: теперь можно нажать!
+  },
+  {
+    _id: "6a28332b2f4bdc11fd12d61",
+    roomNumber: 3,
+    category: "Люкс",
+    pricePerDay: 2500,
+    status: "free" // ИЗМЕНЕНО: теперь можно нажать!
+  },
+  {
+    _id: "6a28332b2f4bdc11fd12d62",
+    roomNumber: 4,
+    category: "Люкс",
+    pricePerDay: 2500,
+    status: "free" // ИЗМЕНЕНО: теперь можно нажать!
+  }
+];
   }
 
   // Автоматически выбираем первый свободный вольер для калькулятора
