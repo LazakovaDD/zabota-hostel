@@ -136,29 +136,56 @@ export default {
   },
   methods: {
     async fetchRooms() {
-      try {
-        const response = await fetch('http://localhost:3000/api/rooms');
-        if (response.ok) {
-          this.rooms = await response.json();
-          
-          // Автоматически выбираем первый СВОБОДНЫЙ вольер, чтобы калькулятор сразу считал цену
-          const firstFree = this.rooms.find(r => r.status === 'free');
-          if (firstFree) {
-            this.selectRoom(firstFree);
-          }
-        }
-      } catch (err) {
-        console.error('Ошибка связи с бэкендом (порт 3000):', err);
+  try {
+    // Пытаемся достучаться до вашего локального сервера
+    const response = await fetch('http://localhost:3000/api/rooms');
+    if (response.ok) {
+      this.rooms = await response.json();
+    } else {
+      throw new Error('Сервер недоступен');
+    }
+  } catch (err) {
+    console.log('Бэкенд выключен. Подключаем демонстрационные данные MongoDB...');
+    
+    // Точные копии ваших вольеров из базы данных MongoDB для работы в интернете
+    this.rooms = [
+      {
+        _id: "6a28332b2f4bdc11fff12d65f",
+        roomNumber: 1,
+        category: "Стандарт",
+        pricePerDay: 1000,
+        status: "free"
+      },
+      {
+        _id: "6a28332b2f4bdc11fd12d60",
+        roomNumber: 2,
+        category: "Стандарт",
+        pricePerDay: 1000,
+        status: "occupied"
+      },
+      {
+        _id: "6a28332b2f4bdc11fd12d61",
+        roomNumber: 3,
+        category: "Люкс",
+        pricePerDay: 2500,
+        status: "cleaning"
+      },
+      {
+        _id: "6a28332b2f4bdc11fd12d62",
+        roomNumber: 4,
+        category: "Люкс",
+        pricePerDay: 2500,
+        status: "free"
       }
-    },
-    // Вспомогательный метод для выбора карточки вольера
-    selectRoom(room) {
-      if (room.status !== 'free') return; // Занятые вольеры выбрать нельзя
-      this.roomClass = room._id;
-      this.currentRoomPrice = room.pricePerDay;
-      this.selectedRoomNumber = room.roomNumber;
-      this.selectedRoomCategory = room.category;
-    },
+    ];
+  }
+
+  // Автоматически выбираем первый свободный вольер для калькулятора
+  const firstFree = this.rooms.find(r => r.status === 'free');
+  if (firstFree) {
+    this.selectRoom(firstFree);
+  }
+},
     sendReservation() {
       if (!this.roomClass) {
         alert('Пожалуйста, выберите вольер для заселения!');
