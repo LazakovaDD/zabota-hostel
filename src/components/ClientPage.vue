@@ -26,42 +26,51 @@
               </div>
             </div>
             <div class="form-group">
-              <label>Ккого заселяем?</label>
-              <select class="form-control" v-model="petType"><option>Собака</option><option>Кошка</option></select>
+              <label>Кого заселяем?</label>
+              <select class="form-control" v-model="petType">
+                <option>Собака</option>
+                <option>Кошка</option>
+              </select>
             </div>
           </div>
 
           <div class="card">
-  <h3 class="card-title"><i class="fa-solid fa-hotel"></i> 2. Выбор категории вольера</h3>
-  <div class="room-select-grid">
-    
-    <div 
-      v-for="room in rooms" 
-      :key="room._id" 
-      :class="['room-option', { selected: roomClass === room._id, 'room-disabled': room.status !== 'free' }]" 
-      @click="selectRoom(room)"
-    >
-      <h4>Вольер №{{ room.roomNumber }}</h4>
-      <p style="font-size: 13px; color: var(--gray);">{{ room.category || 'Стандарт' }}</p>
-      
-      <p style="font-size: 11px; margin-top: 4px; font-weight: 600;">
-        <span v-if="room.status === 'free'" style="color: var(--success);">● Свободен</span>
-        <span v-else-if="room.status === 'occupied'" style="color: #e74c3c;">● Занят</span>
-        <span v-else style="color: #f39c12;">● На уборке</span>
-      </p>
+            <h3 class="card-title"><i class="fa-solid fa-hotel"></i> 2. Выбор категории вольера</h3>
+            <div class="room-select-grid">
+              
+              <div 
+                v-for="room in rooms" 
+                :key="room._id" 
+                :class="['room-option', { selected: roomClass === room._id, 'room-disabled': room.status !== 'free' }]" 
+                @click="selectRoom(room)"
+              >
+                <h4>Вольер №{{ room.roomNumber }}</h4>
+                <p style="font-size: 13px; color: var(--gray);">{{ room.category || 'Стандарт' }}</p>
+                
+                <p style="font-size: 11px; margin-top: 4px; font-weight: 600;">
+                  <span v-if="room.status === 'free'" style="color: var(--success);">● Свободен</span>
+                  <span v-else-if="room.status === 'occupied'" style="color: #e74c3c;">● Занят</span>
+                  <span v-else style="color: #f39c12;">● На уборке</span>
+                </p>
 
-      <p style="margin-top: 10px; font-weight: bold; color: var(--primary);">
-        {{ room.pricePerDay.toLocaleString() }} ₽ / сут
-      </p>
-    </div>
+                <p style="margin-top: 10px; font-weight: bold; color: var(--primary);">
+                  {{ room.pricePerDay.toLocaleString() }} ₽ / сут
+                </p>
+              </div>
 
-  </div>
-</div>
+            </div>
+          </div>
 
           <div class="card">
             <h3 class="card-title"><i class="fa-solid fa-paw"></i> 3. Сведения о животном</h3>
-            <div class="form-group"><label>Кличка</label><input type="text" class="form-control" v-model="petName" placeholder="Арчи"></div>
-            <div class="form-group"><label>Особые требования к питанию</label><input type="text" class="form-control" v-model="petFeatures" placeholder="Кормление строго в 09:00 и 21:00"></div>
+            <div class="form-group">
+              <label>Кличка</label>
+              <input type="text" class="form-control" v-model="petName" placeholder="Арчи">
+            </div>
+            <div class="form-group">
+              <label>Особые требования к питанию</label>
+              <input type="text" class="form-control" v-model="petFeatures" placeholder="Кормление строго в 09:00 и 21:00">
+            </div>
           </div>
         </div>
 
@@ -96,14 +105,11 @@ export default {
       checkInDate: '2026-06-01',
       checkOutDate: '2026-06-06',
       petType: 'Собака',
-      
-      // ИЗМЕНЕНО: теперь храним список комнат из БД и ID выбранной комнаты
       rooms: [], 
-      roomClass: null, // Сюда будет записываться _id выбранного вольера
+      roomClass: null, 
       currentRoomPrice: 0,
-      selectedRoomNumber: null, // Запоминаем номер для отправки админу
-      selectedRoomCategory: '',  // Запоминаем категорию для отправки админу
-
+      selectedRoomNumber: null, 
+      selectedRoomCategory: '',  
       petName: '',
       petFeatures: '',
       services: { grooming: false, transfer: false, vet: false }
@@ -130,62 +136,69 @@ export default {
       return this.baseCost + this.servicesCost;
     }
   },
-  // ДОБАВЛЕНО: Хук mounted автоматически запрашивает вольеры у сервера Express
   mounted() {
     this.fetchRooms();
   },
   methods: {
     async fetchRooms() {
-  try {
-    // Попытка связаться с локальным сервером
-    const response = await fetch('http://localhost:3000/api/rooms');
-    if (response.ok) {
-      this.rooms = await response.json();
-    } else {
-      throw new Error('Локальный сервер не ответил');
-    }
-  } catch (err) {
-    console.log('Используются демонстрационные данные для Vercel...');
-    
-    // Гарантированно СВОБОДНЫЕ вольеры с правильными ценами из вашей базы
-    this.rooms = [
-      {
-        _id: "6a28332b2f4bdc11ffd12d5f",
-        roomNumber: 1,
-        category: "Стандарт",
-        pricePerDay: 1000,
-        status: "free"
-      },
-      {
-        _id: "6a28332b2f4bdc11ffd12d60",
-        roomNumber: 2,
-        category: "Стандарт",
-        pricePerDay: 1000,
-        status: "free"
-      },
-      {
-        _id: "6a28332b2f4bdc11ffd12d61",
-        roomNumber: 3,
-        category: "Люкс",
-        pricePerDay: 2500,
-        status: "free"
-      },
-      {
-        _id: "6a28332b2f4bdc11ffd12d62",
-        roomNumber: 4,
-        category: "Люкс",
-        pricePerDay: 2500,
-        status: "free"
+      try {
+        const response = await fetch('http://localhost:3000/api/rooms');
+        if (response.ok) {
+          this.rooms = await response.json();
+        } else {
+          throw new Error('Локальный сервер не ответил');
+        }
+      } catch (err) {
+        console.log('Используются демонстрационные данные для Vercel...');
+        
+        // Все демонстрационные вольеры теперь гарантированно СВОБОДНЫЕ для кликов
+        this.rooms = [
+          {
+            _id: "6a28332b2f4bdc11ffd12d5f",
+            roomNumber: 1,
+            category: "Стандарт",
+            pricePerDay: 1000,
+            status: "free"
+          },
+          {
+            _id: "6a28332b2f4bdc11ffd12d60",
+            roomNumber: 2,
+            category: "Стандарт",
+            pricePerDay: 1000,
+            status: "free"
+          },
+          {
+            _id: "6a28332b2f4bdc11ffd12d61",
+            roomNumber: 3,
+            category: "Люкс",
+            pricePerDay: 2500,
+            status: "free"
+          },
+          {
+            _id: "6a28332b2f4bdc11ffd12d62",
+            roomNumber: 4,
+            category: "Люкс",
+            pricePerDay: 2500,
+            status: "free"
+          }
+        ];
       }
-    ];
-  }
 
-  // Задаем начальный выбор (первый свободный вольер)
-  const firstFree = this.rooms.find(r => r.status === 'free');
-  if (firstFree) {
-    this.selectRoom(firstFree);
-  }
-},
+      // Автоматически выбираем первый свободный номер при загрузке страницы
+      const firstFree = this.rooms.find(r => r.status === 'free');
+      if (firstFree) {
+        this.selectRoom(firstFree);
+      }
+    },
+
+    selectRoom(room) {
+      if (room.status !== 'free') return; 
+      this.roomClass = room._id;
+      this.currentRoomPrice = room.pricePerDay;
+      this.selectedRoomNumber = room.roomNumber;
+      this.selectedRoomCategory = room.category;
+    },
+
     sendReservation() {
       if (!this.roomClass) {
         alert('Пожалуйста, выберите вольер для заселения!');
@@ -201,7 +214,6 @@ export default {
         petName: this.petName || 'Арчи',
         petType: this.petType,
         period: `${this.checkInDate.split('-').reverse().slice(0,2).join('.')} - ${this.checkOutDate.split('-').reverse().slice(0,2).join('.')}`,
-        // ИЗМЕНЕНО: Отправляем админу реальные данные выбранного из БД вольера
         roomType: `Вольер №${this.selectedRoomNumber} (${this.selectedRoomCategory})`,
         services: activeServices.length > 0 ? activeServices.join(', ') : 'нет'
       };
@@ -221,8 +233,8 @@ header { background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-
 main { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
 .grid-layout { display: grid; grid-template-columns: 7fr 5fr; gap: 30px; }
 .room-select-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.room-option { border: 2px solid var(--border); border-radius: 8px; padding: 15px; cursor: pointer; }
-.room-option.selected { border-color: var(--primary); background-color: #fffaf0; }
+.room-option { border: 2px solid var(--border); border-radius: 8px; padding: 15px; cursor: pointer; transition: all 0.2s ease; }
+.room-option.selected { border-color: var(--primary); background-color: #fffaf0; box-shadow: 0 0 8px rgba(243, 156, 18, 0.2); }
 .checkbox-group { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
 .checkbox-label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
 .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px; }
