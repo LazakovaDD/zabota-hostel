@@ -137,50 +137,50 @@ export default {
   methods: {
     async fetchRooms() {
   try {
-    // Пытаемся достучаться до вашего локального сервера
+    // Попытка связаться с локальным сервером
     const response = await fetch('http://localhost:3000/api/rooms');
     if (response.ok) {
       this.rooms = await response.json();
     } else {
-      throw new Error('Сервер недоступен');
+      throw new Error('Локальный сервер не ответил');
     }
   } catch (err) {
-    console.log('Бэкенд выключен. Подключаем демонстрационные данные MongoDB...');
+    console.log('Используются демонстрационные данные для Vercel...');
     
-    // Точные копии ваших вольеров из базы данных MongoDB для работы в интернете
-this.rooms = [
-  {
-    _id: "6a28332b2f4bdc11fff12d65f",
-    roomNumber: 1,
-    category: "Стандарт",
-    pricePerDay: 1000,
-    status: "free" // Оставляем свободным
-  },
-  {
-    _id: "6a28332b2f4bdc11fd12d60",
-    roomNumber: 2,
-    category: "Стандарт",
-    pricePerDay: 1000,
-    status: "free" // ИЗМЕНЕНО: теперь можно нажать!
-  },
-  {
-    _id: "6a28332b2f4bdc11fd12d61",
-    roomNumber: 3,
-    category: "Люкс",
-    pricePerDay: 2500,
-    status: "free" // ИЗМЕНЕНО: теперь можно нажать!
-  },
-  {
-    _id: "6a28332b2f4bdc11fd12d62",
-    roomNumber: 4,
-    category: "Люкс",
-    pricePerDay: 2500,
-    status: "free" // ИЗМЕНЕНО: теперь можно нажать!
-  }
-];
+    // Гарантированно СВОБОДНЫЕ вольеры с правильными ценами из вашей базы
+    this.rooms = [
+      {
+        _id: "6a28332b2f4bdc11ffd12d5f",
+        roomNumber: 1,
+        category: "Стандарт",
+        pricePerDay: 1000,
+        status: "free"
+      },
+      {
+        _id: "6a28332b2f4bdc11ffd12d60",
+        roomNumber: 2,
+        category: "Стандарт",
+        pricePerDay: 1000,
+        status: "free"
+      },
+      {
+        _id: "6a28332b2f4bdc11ffd12d61",
+        roomNumber: 3,
+        category: "Люкс",
+        pricePerDay: 2500,
+        status: "free"
+      },
+      {
+        _id: "6a28332b2f4bdc11ffd12d62",
+        roomNumber: 4,
+        category: "Люкс",
+        pricePerDay: 2500,
+        status: "free"
+      }
+    ];
   }
 
-  // Автоматически выбираем первый свободный вольер для калькулятора
+  // Задаем начальный выбор (первый свободный вольер)
   const firstFree = this.rooms.find(r => r.status === 'free');
   if (firstFree) {
     this.selectRoom(firstFree);
